@@ -39,7 +39,7 @@ include('../app/controllers/clientes/listado_de_clientes.php');
                                 <tr>
                                     <th><center>Nro</center></th>
                                     <th><center>Nombre del Cliente</center></th>
-                                    <th><center>Nit/Ci</center></th>
+                                    <th><center>Dirección del Cliente</center></th>
                                     <th><center>Celular</center></th>
                                     <th><center>Correo</center></th>
                                 </tr>
@@ -55,7 +55,7 @@ include('../app/controllers/clientes/listado_de_clientes.php');
                                 <tr>
                                     <td><center><?php echo $contador + 1; ?></center></td>
                                     <td><?php echo $clientes_dato['nombre_cliente']; ?></td>
-                                    <td><?php echo $clientes_dato['nit_ci_cliente']; ?></td>
+                                    <td><?php echo $clientes_dato['direccion_cliente']; ?></td>
                                     <td><center><?php echo $clientes_dato['celular_cliente']; ?></center></td>
                                     <td><center><?php echo $clientes_dato['email_cliente']; ?></center></td>
                                 </tr>
@@ -68,7 +68,7 @@ include('../app/controllers/clientes/listado_de_clientes.php');
                                 <tr>
                                     <th><center>Nro</center></th>
                                     <th><center>Nombre del Cliente</center></th>
-                                    <th><center>Nit/Ci</center></th>
+                                    <th><center>Dirección del Cliente</center></th>
                                     <th><center>Celular</center></th>
                                     <th><center>Correo</center></th>
                                 </tr>

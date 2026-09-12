@@ -1,0 +1,289 @@
+/* ====== FUENTES Y VARIABLES ====== */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;600;700&display=swap');
+
+:root {
+    --color-primario:   #EAA300;     /* Naranja/Amarillo institucional */
+    --color-secundario: #F5B000;     /* Amarillo brillante */
+    --color-claro:      #FFF8E1;     /* Fondo claro */
+    --color-texto:      #8E8E8E;     /* Texto secundario gris */
+    --color-blanco:     #FFFFFF;     /* Blanco */
+    --fuente-titulos:   'Playfair Display', Georgia, serif;
+    --fuente-cuerpo:    'Montserrat', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--fuente-cuerpo);
+    background-color: var(--color-blanco);
+    color: #333333;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+/* ====== ENCABEZADO Y NAVEGACIÓN ====== */
+header.header-site {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    background: transparent;
+    border-bottom: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+.logo-container img {
+    height: 55px;
+    width: auto;
+}
+
+nav.nav-principal ul {
+    display: flex;
+    list-style: none;
+    gap: 2.2rem;
+    align-items: center;
+}
+
+nav.nav-principal a {
+    text-decoration: none;
+    color: var(--color-primario);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+nav.nav-principal a:hover,
+nav.nav-principal a.active {
+    color: var(--color-primario);
+}
+
+/* Icono de Usuario circular */
+.user-icon-btn {
+    background-color: var(--color-primario);
+    color: #FFF176;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.user-icon-btn:hover {
+    background-color: var(--color-secundario);
+    color: var(--color-blanco);
+}
+
+/* ====== CONTENIDO PRINCIPAL ====== */
+.quienes-main-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 7rem 5rem 3rem;
+    position: relative;
+    min-height: 100vh;
+}
+
+.quienes-info {
+    max-width: 440px;
+    margin-right: auto;
+    z-index: 10;
+}
+
+.quienes-info .logo-cuerpo {
+    max-width: 260px;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.quienes-info h1 {
+    font-family: var(--fuente-titulos);
+    font-size: 2.8rem;
+    color: var(--color-primario);
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-bottom: 1.2rem;
+    text-transform: uppercase;
+}
+
+.quienes-info .descripcion {
+    font-family: var(--fuente-cuerpo);
+    font-size: 0.95rem;
+    color: var(--color-texto);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    max-width: 380px;
+}
+
+/* ====== BOTONES MISIÓN / VISIÓN / VALORES ====== */
+.tab-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.btn-pildora {
+    background-color: var(--color-primario);
+    color: var(--color-blanco);
+    border: none;
+    padding: 0.6rem 1.6rem;
+    border-radius: 25px;
+    font-family: var(--fuente-cuerpo);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-pildora.activo,
+.btn-pildora:hover {
+    background-color: #D99300;
+    transform: translateY(-1px);
+}
+
+/* ====== BOCADILLO / CONTENEDOR DE TEXTO INFORMATIVO ====== */
+.info-bocadillo {
+    position: relative;
+    display: none;
+    background-color: var(--color-secundario);
+    color: #222222;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.info-bocadillo.activo {
+    display: block;
+}
+
+/* Flecha del bocadillo */
+.info-bocadillo.activo::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid var(--color-secundario);
+    transition: left 0.3s ease;
+}
+
+#mision.activo::before {
+    left: 15%; 
+}
+
+#vision.activo::before {
+    left: 37%; 
+    transform: translateX(-50%);
+}
+
+#valores.activo::before {
+    right: 35%; 
+}
+
+/* ====== GALERÍA FLOR CON IMÁGENES SUPERPUESTAS ====== */
+.quienes-galeria-container {
+    position: absolute;
+    right: 2%;
+    top: 50%;
+    transform: translateY(-40%);
+    width: 650px;
+    height: 650px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Imagen de fondo de la Flor Amarilla */
+.flor-fondo {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url('../cliente/img_clientes/i.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 1;
+}
+
+/* Contenedor superpuesto de tarjetas */
+.cards-wrapper {
+    position: relative;
+    width: 500px;
+    height: 380px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilo base de cada tarjeta */
+.card {
+    position: absolute;
+    border-radius: 28px;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    border: 3px solid var(--color-blanco);
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Estado 1: Tarjeta Central Prominente */
+.card-center {
+    width: 260px;
+    height: 360px;
+    z-index: 3;
+    transform: translateX(0) scale(1);
+}
+
+/* Estado 2: Tarjeta Izquierda */
+.card-left {
+    width: 190px;
+    height: 300px;
+    z-index: 2;
+    transform: translateX(-140px) scale(0.9);
+    opacity: 0.9;
+}
+
+/* Estado 3: Tarjeta Derecha */
+.card-right {
+    width: 190px;
+    height: 300px;
+    z-index: 2;
+    transform: translateX(140px) scale(0.9);
+    opacity: 0.9;
+}

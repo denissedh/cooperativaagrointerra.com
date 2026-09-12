@@ -1,4 +1,5 @@
 <?php
+
 include ('app/config.php');
 include ('layout/sesion.php');
 

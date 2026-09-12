@@ -19,9 +19,7 @@ include('../app/controllers/usuarios/listado_de_usuarios.php');
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-
                     <div class="card card-outline card-primary">
-
                         <div class="card-header">
                             <h3 class="card-title">Usuarios registrados</h3>
 

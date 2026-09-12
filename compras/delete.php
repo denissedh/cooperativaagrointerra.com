@@ -67,18 +67,44 @@ include ('../app/controllers/compras/cargar_compra.php');
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label for="">Usuario</label>
+                                                        <label for="">Usuario:</label>
                                                         <input type="text" value="<?= $nombres_usuarios; ?>" class="form-control" id="usuarios_producto" disabled>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-8">
+                                                <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label for="">Descripción del producto:</label>
-                                                        <textarea name="descripcion" id="descripcio_producto" cols="30" rows="2" class="form-control" disabled><?= $descripcion; ?></textarea>
+                                                        <label for="">Cantidad (Ej: 1 Litro, 500 ml):</label>
+                                                        <input type="text" value="<?= $cantidad_producto; ?>" class="form-control" id="cantidad" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Unidad (Litros, ml, piezas, etc.):</label>
+                                                        <input type="text" value="<?= $unidad; ?>" class="form-control" id="unidad" disabled>
                                                     </div>
                                                 </div>
                                             </div>
 
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Beneficios:</label>
+                                                        <textarea name="Beneficios" id="beneficios" cols="30" rows="2" class="form-control" disabled><?= $beneficios; ?></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Ingredientes:</label>
+                                                        <textarea name="ingredientes" id="ingredientes" cols="30" rows="2" class="form-control" disabled><?= $ingredientes; ?></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Propiedades:</label>
+                                                        <textarea name="propiedades" id="propiedades" cols="30" rows="2" class="form-control" disabled><?= $propiedades; ?></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                             <div class="row">
                                                 <div class="col-md-2">
@@ -118,7 +144,6 @@ include ('../app/controllers/compras/cargar_compra.php');
                                                     </div>
                                                 </div>
                                             </div>
-
 
                                         </div>
                                         <div class="col-md-3">
@@ -259,7 +284,6 @@ include ('../app/controllers/compras/cargar_compra.php');
                                         </div>
 
                                         <div id="respuesta_delete"></div>
-
                                         <script>
                                             $('#btn_eliminar').click(function () {
                                                 var id_compra = '<?php echo $id_compra_get; ?>';
@@ -280,14 +304,14 @@ include ('../app/controllers/compras/cargar_compra.php');
                                                             eliminar(),
                                                             'Compra eliminada',
                                                             'success'
-
                                                         )
                                                     }
                                                 });
 
                                                 function eliminar() {
                                                     var url = "../app/controllers/compras/delete.php";
-                                                    $.get(url,{id_compra:id_compra,id_producto:id_producto,cantidad_compra:cantidad_compra,stock_actual:stock_actual},function (datos) {
+                                                    $.get(url,{id_compra:id_compra,id_producto:id_producto,cantidad_compra:cantidad_compra,
+                                                    stock_actual:stock_actual},function (datos) {
                                                         $('#respuesta_delete').html(datos);
                                                     });
                                                 }
@@ -302,10 +326,7 @@ include ('../app/controllers/compras/cargar_compra.php');
                             </div>
 
                         </div>
-
-
                     </div>
-
 
                 </div>
             </div>

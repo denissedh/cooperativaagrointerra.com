@@ -42,8 +42,12 @@ include('../app/controllers/clientes/cargar_clientes.php');
                                     <thead>
                                         <tr>
                                             <th style="background-color: #e7e7e7;text-align: center">Nro</th>
+                                            <th style="background-color: #e7e7e7;text-align: center">Código</th>
                                             <th style="background-color: #e7e7e7;text-align: center">Producto</th>
-                                            <th style="background-color: #e7e7e7;text-align: center">Descripción</th>
+                                            <th style="background-color: #e7e7e7;text-align: center">Presentación</th>
+                                            <th style="background-color: #e7e7e7;text-align: center">Beneficios</th>
+                                            <th style="background-color: #e7e7e7;text-align: center">Propiedades</th>
+                                            <th style="background-color: #e7e7e7;text-align: center">Ingredientes</th>
                                             <th style="background-color: #e7e7e7;text-align: center">Cantidad</th>
                                             <th style="background-color: #e7e7e7;text-align: center">Precio Unitario</th>
                                             <th style="background-color: #e7e7e7;text-align: center">Precio SubTotal</th>
@@ -56,35 +60,59 @@ include('../app/controllers/clientes/cargar_clientes.php');
                                     $precio_unitario_total= 0;
                                     $precio_total = 0;
 
-                                    $sql_carrito = "SELECT *,pro.nombre as nombre_producto, pro.descripcion as descripcion, pro.precio_venta as precio_venta, pro.stock as stock, pro.id_producto as id_producto FROM  tb_carrito AS carr INNER JOIN tb_almacen as pro ON carr.id_producto = pro.id_producto WHERE nro_venta = '$nro_venta' ORDER BY id_carrito ASC";
+                                    $sql_carrito = "SELECT carr.*, 
+                                                           pro.id_producto as id_producto,
+                                                           pro.codigo as codigo,
+                                                           pro.nombre as nombre_producto, 
+                                                           pro.Beneficios as beneficios,
+                                                           pro.cantidad as presentacion_cantidad,
+                                                           pro.unidad as unidad,
+                                                           pro.ingredientes as ingredientes,
+                                                           pro.propiedades as propiedades,
+                                                           pro.precio_venta as precio_venta, 
+                                                           pro.stock as stock 
+                                                    FROM tb_carrito AS carr 
+                                                    INNER JOIN tb_almacen AS pro ON carr.id_producto = pro.id_producto 
+                                                    INNER JOIN tb_ventas AS v ON carr.nro_venta = v.nro_venta
+                                                    WHERE carr.nro_venta = :nro_venta 
+                                                      AND v.estado = 'COMPLETADA' 
+                                                    ORDER BY carr.id_carrito ASC";
+
                                     $query_carrito = $pdo->prepare($sql_carrito);
-                                    $query_carrito->execute();
+                                    $query_carrito->execute([':nro_venta' => $nro_venta]);
                                     $carrito_datos = $query_carrito->fetchAll(PDO::FETCH_ASSOC);
                                     
                                     foreach ($carrito_datos as $carrito_dato){
                                         $id_carrito = $carrito_dato['id_carrito'];
                                         $contador_de_carrito = $contador_de_carrito + 1;
-                                        $cantidad_total = $cantidad_total + $carrito_dato['cantidad'];
-                                        $precio_unitario_total = $precio_unitario_total + floatval($carrito_dato['precio_venta']);
+
+                                        $cant_item = isset($carrito_dato['cantidad']) && is_numeric($carrito_dato['cantidad']) ? floatval($carrito_dato['cantidad']) : 0;
+                                        $precio_item = isset($carrito_dato['precio_venta']) && is_numeric($carrito_dato['precio_venta']) ? floatval($carrito_dato['precio_venta']) : 0;
+
+                                        $cantidad_total = $cantidad_total + $cant_item;
+                                        $precio_unitario_total = $precio_unitario_total + $precio_item;
                                         ?>
                                         <tr>
                                             <td>
                                                 <center><?php echo $contador_de_carrito; ?></center>
                                                 <input type="text" value="<?php echo $carrito_dato['id_producto']; ?>" id="id_producto<?php echo $contador_de_carrito; ?>" hidden>
                                             </td>
+                                            <td><center><?php echo $carrito_dato['codigo']; ?></center></td>
                                             <td><?php echo $carrito_dato['nombre_producto']; ?></td>
-                                            <td><?php echo $carrito_dato['descripcion']; ?></td>
+                                            <td><?php echo $carrito_dato['presentacion_cantidad'] . ' ' . $carrito_dato['unidad']; ?></td>
+                                            <td><?php echo $carrito_dato['beneficios']; ?></td>
+                                            <td><?php echo $carrito_dato['propiedades']; ?></td>
+                                            <td><?php echo $carrito_dato['ingredientes']; ?></td>
                                             <td>
-                                                <center><span id="cantidad_carrito<?php echo $contador_de_carrito; ?>"><?php echo $carrito_dato['cantidad']; ?></span></center>
+                                                <center><span id="cantidad_carrito<?php echo $contador_de_carrito; ?>"><?php echo $cant_item; ?></span></center>
                                                 <input type="text" value="<?php echo $carrito_dato['stock']; ?>" id="stock_de_inventario<?php echo $contador_de_carrito; ?>" hidden>
                                             </td>
-                                            <td><center><?php echo $carrito_dato['precio_venta']; ?></center></td>
+                                            <td><center><?php echo $precio_item; ?></center></td>
                                             <td>
                                                 <center>
                                                     <?php
-                                                    $cantidad = floatval($carrito_dato['cantidad']);
-                                                    $precio_venta = floatval($carrito_dato['precio_venta']);
-                                                    echo $subtotal = $cantidad * $precio_venta;
+                                                    $subtotal = $cant_item * $precio_item;
+                                                    echo $subtotal;
                                                     $precio_total = $precio_total + $subtotal;
                                                     ?>
                                                 </center>
@@ -94,7 +122,7 @@ include('../app/controllers/clientes/cargar_clientes.php');
                                     }
                                     ?>
                                         <tr>
-                                            <th colspan="3" style="background-color: #e7e7e7;text-align: right">Total</th>
+                                            <th colspan="7" style="background-color: #e7e7e7;text-align: right">Total</th>
                                             <th><center><?php echo $cantidad_total; ?></center></th>
                                             <th><center><?php echo $precio_unitario_total; ?></center></th>
                                             <th style="background-color: #fff819"><center><?php echo $precio_total; ?></center></th>
@@ -117,7 +145,7 @@ include('../app/controllers/clientes/cargar_clientes.php');
                             foreach ($clientes_datos as $clientes_dato)
                                 {
                                     $nombre_cliente = $clientes_dato['nombre_cliente'];
-                                    $nit_ci_cliente = $clientes_dato['nit_ci_cliente'];
+                                    $direccion_cliente = $clientes_dato['direccion_cliente'];
                                     $celular_cliente = $clientes_dato['celular_cliente'];
                                     $email_cliente = $clientes_dato['email_cliente'];
                                 }
@@ -134,8 +162,8 @@ include('../app/controllers/clientes/cargar_clientes.php');
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="">Nit/Ci del Cliente</label>
-                                        <input type="text" value="<?php echo $nit_ci_cliente; ?>" class="form-control" id="nit_ci_cliente" disabled>
+                                        <label for="">Direccion del Cliente</label>
+                                        <input type="text" value="<?php echo $direccion_cliente; ?>" class="form-control" id="direccion_cliente" disabled>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -167,7 +195,8 @@ include('../app/controllers/clientes/cargar_clientes.php');
                         <div class="card-body">
                             <div class="form-group">
                                 <label for="">Monto a Cancelar</label>
-                                <input type="text" class="form-control" id="total_a_cancelar" style="text-align: center; background-color: #fff815;" value="<?php echo $precio_total; ?>" disabled>
+                                <input type="text" class="form-control" id="total_a_cancelar"
+                                 style="text-align: center; background-color: #fff815;" value="<?php echo $precio_total; ?>" disabled>
                             </div>
                         </div>
                     </div>
@@ -180,7 +209,6 @@ include('../app/controllers/clientes/cargar_clientes.php');
 <?php include('../layout/mensajes.php'); ?>
 <?php include('../layout/parte2.php'); ?>
 
-<!-- Script de inicialización igual al vídeo -->
 <script>
     $(function () {
         $("#example1").DataTable({
@@ -205,10 +233,8 @@ include('../app/controllers/clientes/cargar_clientes.php');
                 }
             },
             "responsive": true, "lengthChange": true, "autoWidth": false,
-
         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
-
 
     $(function () {
         $("#example2").DataTable({
@@ -233,7 +259,6 @@ include('../app/controllers/clientes/cargar_clientes.php');
                 }
             },
             "responsive": true, "lengthChange": true, "autoWidth": false,
-
         }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
     });
 </script>

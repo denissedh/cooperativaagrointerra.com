@@ -1,7 +1,5 @@
 <?php
 // Include the main TCPDF library
-
-
 require_once('../app/TCPDF-main/tcpdf.php');
 include('../app/config.php');
 include('../app/controllers/ventas/literal.php');
@@ -11,7 +9,7 @@ session_start();
 $nombres_sesion = "Usuario"; 
 
 if (isset($_SESSION['sesion_email'])) {
-    // echo "si existe sesion de ".$_SESSION['sesion_email'];
+
     $email_sesion = $_SESSION['sesion_email'];
 
     $sql = "SELECT us.id_usuarios as id_usuarios, us.nombres as nombres, us.email as email, rol.rol as rol
@@ -31,24 +29,59 @@ if (isset($_SESSION['sesion_email'])) {
 } else {
     echo "no existe sesion";
     header("Location: ".$URL."/login");
+    exit();
 }
 
 $id_venta_get = isset($_GET['id_venta']) ? $_GET['id_venta'] : '';
 
-$sql_ventas = "SELECT *, cli.nombre_cliente as nombre_cliente, cli.nit_ci_cliente as nit_ci_cliente 
-FROM tb_ventas as ve INNER JOIN tb_clientes as cli ON cli.id_cliente = ve.id_cliente where ve.id_venta = '$id_venta_get' ";
+$sql_ventas = "SELECT 
+    ve.id_venta as id_venta,
+    ve.nro_venta as nro_venta,
+    ve.id_cliente as id_cliente,
+    ve.total_pagado as total_pagado,
+    ve.fyh_creacion as fyh_creacion,
+    ve.fyh_actualizacon as fyh_actualizacon,
+    ve.estado as estado,
+    cli.nombre_cliente as nombre_cliente, 
+    cli.direccion_cliente as direccion_cliente,
+    cli.celular_cliente as celular_cliente,
+    cli.email_cliente as email_cliente,
+    fac.nro_factura as nro_factura
+FROM tb_ventas as ve 
+INNER JOIN tb_clientes as cli ON cli.id_cliente = ve.id_cliente 
+LEFT JOIN tb_facturas as fac ON fac.id_venta = ve.id_venta
+WHERE ve.id_venta = :id_venta";
+
 $query_ventas = $pdo->prepare($sql_ventas);
-$query_ventas->execute();
+$query_ventas->execute([':id_venta' => $id_venta_get]);
 $ventas_datos = $query_ventas->fetchAll(PDO::FETCH_ASSOC);
 
-foreach($ventas_datos as $ventas_dato){
-    $nro_venta_get = $ventas_dato['nro_venta'];
-}
-{
-    $fyh_creacion = $ventas_dato['fyh_creacion'];
-    $nit_ci_cliente = $ventas_dato['nit_ci_cliente'];
-    $nombre_cliente = $ventas_dato['nombre_cliente'];
-    $total_pagado = $ventas_dato['total_pagado'];
+$nro_venta_get = '';
+$nro_factura_mostrar = '';
+$fyh_creacion = date('Y-m-d H:i:s');
+$nombre_cliente = '';
+$direccion_cliente = '';
+$celular_cliente = '';
+$email_cliente = '';
+$total_pagado = 0;
+$id_cliente = '';
+$fyh_actualizacon = '';
+$estado = '';
+
+foreach ($ventas_datos as $ventas_dato) {
+    $id_venta_get       = $ventas_dato['id_venta'];
+    $nro_venta_get      = $ventas_dato['nro_venta'];
+    $id_cliente         = $ventas_dato['id_cliente'];
+    $fyh_creacion       = $ventas_dato['fyh_creacion'];
+    $fyh_actualizacon   = $ventas_dato['fyh_actualizacon'];
+    $estado             = $ventas_dato['estado'];
+    $nombre_cliente     = $ventas_dato['nombre_cliente'];
+    $direccion_cliente  = $ventas_dato['direccion_cliente'];
+    $celular_cliente    = $ventas_dato['celular_cliente'];
+    $email_cliente      = $ventas_dato['email_cliente'];
+    $total_pagado       = $ventas_dato['total_pagado'];
+    // Asignar el número de factura registrado o formatear idéntico al módulo
+    $nro_factura_mostrar = !empty($ventas_dato['nro_factura']) ? $ventas_dato['nro_factura'] : 'FAC-' . str_pad($id_venta_get, 6, '0', STR_PAD_LEFT);
 }
 
 $monto_literal = numtoletras($total_pagado);
@@ -58,9 +91,9 @@ $fecha = date("d/m/Y", strtotime($fyh_creacion));
 // Crear nuevo documento PDF
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, array(215,279), true, 'UTF-8', false);
 
-// Información del documento
+
 $pdf->setCreator(PDF_CREATOR);
-$pdf->setAuthor('Sistema de Ventas Hilari Web');
+$pdf->setAuthor('Sistema de Ventas Agrointerra');
 $pdf->setTitle('Factura de Venta');
 $pdf->setSubject('Factura');
 $pdf->setKeywords('TCPDF, PDF, factura, ventas');
@@ -87,7 +120,7 @@ $pdf->setFont('Helvetica', '', 12);
 // Agregar página
 $pdf->AddPage();
 
-// create some HTML content
+
 $html = '
 <table border="0" style="font-size: 10px">
 <tr>
@@ -101,7 +134,7 @@ $html = '
     <td style="width: 150px"></td>
     <td style="font-size: 16px;width: 290px"><br><br><br>
         <b>NIT: </b>10001099920 <br>
-        <b>Nro factura:</b> '.$id_venta_get.' <br>
+        <b>Nro factura:</b> '.$nro_factura_mostrar.' <br>
         <b>Nro de autorización: </b>100020029930
         <p style="text-align: center"><B>ORIGINAL</B></p>
     </td>
@@ -114,87 +147,110 @@ $html = '
 <table border="0" cellpadding="6px">
 <tr>
     <td><b>Fecha:</b> '.$fecha.'</td>
-    <td></td>
-    <td><b>Nit/CI: </b>'.$nit_ci_cliente.'</td>
+    <td colspan="2"></td>
 </tr>
 <tr>
     <td colspan="3"><b>Señor(es): </b>'.$nombre_cliente.' </td>
 </tr>
+<tr>
+    <td colspan="3"><b>Dirección: </b>'.$direccion_cliente.' </td>
+</tr>
+<tr>
+    <td><b>Celular: </b>'.$celular_cliente.' </td>
+    <td colspan="2"><b>Correo: </b>'.$email_cliente.' </td>
+</tr>
 </table>
 </div>
-<br>
+<br>';
 
-<table border="1" cellpadding="5" cellspacing="0" style="font-size: 12px; width:100%; margin-top:8px;">
-<tr style="text-align: center;background-color: #f0f0f0;font-weight:bold;">
-    <th width="6%">Nro</th>
-    <th width="18%">Producto</th>
-    <th width="38%">Descripción</th>
-    <th width="10%">Cantidad</th>
-    <th width="14%">Precio Unitario</th>
-    <th width="14%">Sub total</th>
-</tr>
-';
 $contador_de_carrito = 0;
 $cantidad_total = 0;
-$precio_unitario_total= 0;
+$precio_unitario_total = 0;
 $precio_total = 0;
 
-$sql_carrito = "SELECT *,pro.nombre as nombre_producto, pro.descripcion as descripcion, pro.precio_venta as precio_venta, pro.stock as stock, pro.id_producto as id_producto 
-FROM tb_carrito AS carr INNER JOIN tb_almacen as pro ON carr.id_producto = pro.id_producto 
-WHERE nro_venta = '$nro_venta_get' ORDER BY id_carrito ASC ";
+$sql_carrito = "SELECT 
+    carr.*,
+    pro.nombre as nombre_producto,
+    pro.codigo,
+    pro.beneficios,
+    pro.stock,
+    pro.stock_minimo,
+    pro.stock_maximo,
+    pro.precio_compra,
+    pro.precio_venta,
+    pro.fecha_ingreso,
+    pro.id_producto
+FROM tb_carrito AS carr 
+INNER JOIN tb_almacen as pro ON carr.id_producto = pro.id_producto 
+WHERE nro_venta = :nro_venta 
+ORDER BY id_carrito ASC";
 
 $query_carrito = $pdo->prepare($sql_carrito);
-$query_carrito->execute();
+$query_carrito->execute([':nro_venta' => $nro_venta_get]);
 $carrito_datos = $query_carrito->fetchAll(PDO::FETCH_ASSOC);
+
+$html .= '
+<table border="1" cellpadding="5" cellspacing="0" style="font-size: 11px; width:100%; margin-top:8px;">
+<tr style="text-align: center;background-color: #f0f0f0;font-weight:bold;">
+    <th width="6%">Nro</th>
+    <th width="12%">Código</th>
+    <th width="22%">Producto</th>
+    <th width="30%">Beneficios</th>
+    <th width="8%">Cant.</th>
+    <th width="12%">Precio Unit.</th>
+    <th width="12%">Subtotal</th>
+</tr>
+';
+
 foreach ($carrito_datos as $carrito_dato) {
-    $id_carrito = $carrito_dato['id_carrito'];
-    $contador_de_carrito = $contador_de_carrito + 1;
-    $cantidad_total = $cantidad_total + $carrito_dato['cantidad'];
-    $precio_unitario_total = $precio_unitario_total + floatval($carrito_dato['precio_venta']);
+    $contador_de_carrito++;
+    $cantidad_total += $carrito_dato['cantidad'];
+    $precio_unitario_total += floatval($carrito_dato['precio_venta']);
     $subtotal = $carrito_dato['cantidad'] * $carrito_dato['precio_venta'];
-    $precio_total = $precio_total + $subtotal;
+    $precio_total += $subtotal;
+
+    $codigo_producto     = $carrito_dato['codigo'];
+    $beneficios_producto = !empty($carrito_dato['beneficios']) ? $carrito_dato['beneficios'] : 'Sin beneficios registrados';
 
     $html .= '
     <tr>
         <td style="text-align: center">'.$contador_de_carrito.'</td>
+        <td style="text-align: center">'.$codigo_producto.'</td>
         <td>'.$carrito_dato['nombre_producto'].'</td>
-        <td>'.$carrito_dato['descripcion'].'</td>
+        <td>'.$beneficios_producto.'</td>
         <td style="text-align: center">'.$carrito_dato['cantidad'].'</td>
-        <td style="text-align: center">Bs. '.$carrito_dato['precio_venta'].'</td>
-        <td style="text-align: center">Bs. '.$subtotal.'</td>
+        <td style="text-align: center">$ '.number_format($carrito_dato['precio_venta'], 2, '.', ',').'</td>
+        <td style="text-align: center">$ '.number_format($subtotal, 2, '.', ',').'</td>
     </tr>
     ';
 }
 
 $html .= '
 <tr>
-    <td colspan="3" style="text-align: right;background-color: #d6d6d6"><b>Total</b></td>
-    <td style="text-align: center;background-color: #d6d6d6">'.$cantidad_total.'</td>
-    <td style="text-align: center;background-color: #d6d6d6">Bs. '.$precio_unitario_total.'</td>
-    <td style="text-align: center;background-color: #d6d6d6">Bs. '.$precio_total.'</td>
+    <td colspan="4" style="text-align: right;background-color: #d6d6d6"><b>Totales:</b></td>
+    <td style="text-align: center;background-color: #d6d6d6"><b>'.$cantidad_total.'</b></td>
+    <td style="text-align: center;background-color: #d6d6d6"><b>$ '.number_format($precio_unitario_total, 2, '.', ',').'</b></td>
+    <td style="text-align: center;background-color: #d6d6d6"><b>$ '.number_format($precio_total, 2, '.', ',').'</b></td>
 </tr>
 </table>
 
-
-<p style="text-align: right">
-    <b>Monto Total: </b> Bs. '.$precio_total.'
+<p style="text-align: right; font-size: 13px; margin-top:10px;">
+    <b>Monto Total: </b> <span style="font-size:15px;">$ '.number_format($precio_total, 2, '.', ',').'</span>
 </p>
 <p>
 <b>Son: </b>'.$monto_literal.'
 </p>
-<br>
---------------------------------------------------------------------------------<br>
+<br>--------------------------------------------------------------------------------<br>
 <b>USUARIO:</b> '.$nombres_sesion.' <br>
 
-<p style="text-align: center">"ESTA FACTURA CONTRIBUYE AL DESARROLLO DEL PAÍS, EL USO ILÍCITO DE ÉSTA SERÁ SANCIONADO DE ACUERDO A LA LEY"
-</p>
+<p style="text-align: left">"ESTA FACTURA CONTRIBUYE AL DESARROLLO DEL PAÍS,</p>
+<p style="text-align: left">EL USO ILÍCITO DE ÉSTA SERÁ SANCIONADO DE ACUERDO A LA LEY"</p>
 <p style="text-align: center"><b>GRACIAS POR SU PREFERENCIA</b></p>
 ';
 
-// Escribir contenido HTML en el PDF
 $pdf->writeHTML($html, true, false, true, false, '');
 
-// Código QR en esquina inferior derecha
+// Código QR
 $style = array(
     'border' => 0,
     'vpadding' => '3',
@@ -205,10 +261,16 @@ $style = array(
     'module_height' => 1
 );
 
-$QR = 'Factura realizada por el sistema de ventas AGROINTERRA, al cliente '.$nombre_cliente.' con nit/ci: '.$nit_ci_cliente.' 
-generada el: '.$fecha.' con el monto total de: '.$precio_total.' ';
+$QR = 'Factura Nro: '.$nro_factura_mostrar.
+       ' | Realizada por AGROINTERRA al cliente '.$nombre_cliente.
+       ' Dirección: '.$direccion_cliente.
+       ' Celular: '.$celular_cliente.
+       ' Correo: '.$email_cliente.
+       ' Generada el: '.$fecha.
+       ' Monto total: $'.number_format($precio_total, 2, '.', ',');
+
 $pdf->write2DBarcode($QR, 'QRCODE,L', 165, 230, 45, 45, $style);
 
 // Salida del PDF
-$pdf->Output('Factura_Venta_'.$nro_venta_get.'.pdf', 'I');
+$pdf->Output('Factura_'.$nro_factura_mostrar.'.pdf', 'I');
 ?>

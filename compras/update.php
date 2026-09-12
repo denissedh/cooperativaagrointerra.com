@@ -40,7 +40,6 @@ include ('../app/controllers/compras/cargar_compra.php');
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
                                         </button>
                                     </div>
-
                                 </div>
 
                                 <div class="card-body" style="display: block;">
@@ -54,7 +53,7 @@ include ('../app/controllers/compras/cargar_compra.php');
                                         </button>
                                         <!-- modal para visualizar datos de los productos -->
                                         <div class="modal fade" id="modal-buscar_producto">
-                                            <div class="modal-dialog modal-lg">
+                                            <div class="modal-dialog modal-xl">
                                                 <div class="modal-content">
                                                     <div class="modal-header" style="background-color: #1d36b6;color: white">
                                                         <h4 class="modal-title">Búsqueda del producto</h4>
@@ -73,7 +72,8 @@ include ('../app/controllers/compras/cargar_compra.php');
                                                                     <th><center>Categoría</center></th>
                                                                     <th><center>Imagen</center></th>
                                                                     <th><center>Nombre</center></th>
-                                                                    <th><center>Descripción</center></th>
+                                                                    <th><center>Presentación</center></th>
+                                                                    <th><center>Unidad</center></th>
                                                                     <th><center>Stock</center></th>
                                                                     <th><center>Precio compra</center></th>
                                                                     <th><center>Precio venta</center></th>
@@ -86,17 +86,21 @@ include ('../app/controllers/compras/cargar_compra.php');
                                                                 $contador = 0;
                                                                 foreach ($productos_datos as $productos_dato){
                                                                     $contador++;
-                                                                    $id_producto = $productos_dato['id_producto']; ?>
+                                                                    $id_producto_tabla = $productos_dato['id_producto']; ?>
                                                                     <tr>
                                                                         <td><?php echo $contador; ?></td>
                                                                         <td>
                                                                             <button class="btn btn-info btn-seleccionar-producto"
-                                                                                    data-id="<?php echo $id_producto;?>"
+                                                                                    data-id="<?php echo $id_producto_tabla;?>"
                                                                                     data-codigo="<?php echo $productos_dato['codigo'];?>"
                                                                                     data-categoria="<?php echo $productos_dato['categoria'];?>"
                                                                                     data-nombre="<?php echo $productos_dato['nombre'];?>"
                                                                                     data-email="<?php echo $productos_dato['email'];?>"
-                                                                                    data-descripcion="<?php echo $productos_dato['descripcion'];?>"
+                                                                                    data-beneficios="<?php echo isset($productos_dato['Beneficios']) ? $productos_dato['Beneficios'] : (isset($productos_dato['beneficios']) ? $productos_dato['beneficios'] : '');?>"
+                                                                                    data-propiedades="<?php echo isset($productos_dato['propiedades']) ? $productos_dato['propiedades'] : '';?>"
+                                                                                    data-ingredientes="<?php echo isset($productos_dato['ingredientes']) ? $productos_dato['ingredientes'] : '';?>"
+                                                                                    data-cantidad-prod="<?php echo isset($productos_dato['cantidad']) ? $productos_dato['cantidad'] : '';?>"
+                                                                                    data-unidad="<?php echo isset($productos_dato['unidad']) ? $productos_dato['unidad'] : '';?>"
                                                                                     data-stock="<?php echo $productos_dato['stock'];?>"
                                                                                     data-stock_min="<?php echo $productos_dato['stock_minimo'];?>"
                                                                                     data-stock_max="<?php echo $productos_dato['stock_maximo'];?>"
@@ -113,7 +117,8 @@ include ('../app/controllers/compras/cargar_compra.php');
                                                                             <img src="<?php echo $URL."/almacen/img_productos/".$productos_dato['imagen'];?>" width="50px" alt="">
                                                                         </td>
                                                                         <td><?php echo $productos_dato['nombre'];?></td>
-                                                                        <td><?php echo $productos_dato['descripcion'];?></td>
+                                                                        <td><?php echo isset($productos_dato['cantidad']) ? $productos_dato['cantidad'] : '';?></td>
+                                                                        <td><?php echo isset($productos_dato['unidad']) ? $productos_dato['unidad'] : '';?></td>
                                                                         <td><?php echo $productos_dato['stock'];?></td>
                                                                         <td><?php echo $productos_dato['precio_compra'];?></td>
                                                                         <td><?php echo $productos_dato['precio_venta'];?></td>
@@ -138,46 +143,74 @@ include ('../app/controllers/compras/cargar_compra.php');
                                     <hr>
                                     <div class="row" style="font-size: 12px">
                                         <div class="col-md-9">
+                                            <!-- Fila 1: Código, Categoría, Nombre, Usuario -->
                                             <div class="row">
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <input type="text" value="<?= $id_producto; ?>" id="id_producto" hidden>
                                                         <label for="">Código:</label>
                                                         <input type="text" value="<?= $codigo; ?>" class="form-control" id="codigo" disabled>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="">Categoría:</label>
-                                                        <div style="display: flex">
-                                                            <input type="text" value="<?= $nombre_categoria; ?>" class="form-control" id="categoria" disabled>
-                                                        </div>
+                                                        <input type="text" value="<?= $nombre_categoria; ?>" class="form-control" id="categoria" disabled>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="">Nombre del producto:</label>
                                                         <input type="text" value="<?= $nombre_producto; ?>" name="nombre" id="nombre_producto" class="form-control" disabled>
                                                     </div>
                                                 </div>
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="">Usuario</label>
+                                                        <label for="">Usuario:</label>
                                                         <input type="text" value="<?= $nombre_usuarios_producto; ?>" class="form-control" id="usuario_producto" disabled>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-8">
+                                            </div>
+
+                                            <!-- Fila 2: Presentación (Cantidad), Unidad, Ingredientes -->
+                                            <div class="row">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label for="">Descripción del producto:</label>
-                                                        <textarea name="descripcion" id="descripcio_producto" cols="30" rows="2" class="form-control" disabled><?= $descripcion; ?></textarea>
+                                                        <label for="">Presentación (Cantidad):</label>
+                                                        <input type="text" value="<?= isset($cantidad_producto) ? $cantidad_producto : ''; ?>" class="form-control" id="cantidad_producto_vista" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Unidad:</label>
+                                                        <input type="text" value="<?= isset($unidad) ? $unidad : ''; ?>" class="form-control" id="unidad_producto" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="">Ingredientes:</label>
+                                                        <textarea id="ingredientes_producto" rows="2" class="form-control" disabled><?= isset($ingredientes) ? $ingredientes : ''; ?></textarea>
                                                     </div>
                                                 </div>
                                             </div>
 
+                                            <!-- Fila 3: Beneficios y Propiedades individuales -->
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="">Beneficios:</label>
+                                                        <textarea name="Beneficios" id="beneficios_producto" rows="2" class="form-control" disabled><?= isset($beneficios) ? $beneficios : ''; ?></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="">Propiedades:</label>
+                                                        <textarea name="propiedades" id="propiedades_producto" rows="2" class="form-control" disabled><?= isset($propiedades) ? $propiedades : ''; ?></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
 
+                                            <!-- Fila 4: Stocks, Precios y Fecha -->
                                             <div class="row">
                                                 <div class="col-md-2">
                                                     <div class="form-group">
@@ -211,19 +244,18 @@ include ('../app/controllers/compras/cargar_compra.php');
                                                 </div>
                                                 <div class="col-md-2">
                                                     <div class="form-group">
-                                                        <label for="">Fecha de ingreso:</label>
+                                                        <label for="">Fecha ingreso:</label>
                                                         <input type="date" style="font-size: 12px" value="<?= $fecha_ingreso; ?>" name="fecha_ingreso" id="fecha_ingreso" class="form-control" disabled>
                                                     </div>
                                                 </div>
                                             </div>
-
 
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="">Imagen del producto</label>
                                                 <center>
-                                                    <img src="<?php echo $URL."/almacen/img_productos/".$imagen;?>" id="img_producto" width="50%" alt="">
+                                                    <img src="<?php echo $URL."/almacen/img_productos/".$imagen;?>" id="img_producto" width="65%" alt="">
                                                 </center>
                                             </div>
                                         </div>
@@ -341,7 +373,6 @@ include ('../app/controllers/compras/cargar_compra.php');
                                                 <div class="form-group">
                                                     <label for="">Empresa </label>
                                                     <input type="text" value="<?= $empresa; ?>" id="empresa" class="form-control" disabled>
-
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -378,7 +409,6 @@ include ('../app/controllers/compras/cargar_compra.php');
                                             <i class="fas fa-minus"></i>
                                         </button>
                                     </div>
-
                                 </div>
 
                                 <div class="card-body">
@@ -443,7 +473,6 @@ include ('../app/controllers/compras/cargar_compra.php');
                                             </script>
                                         </div>
 
-
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="">Usuario</label>
@@ -488,7 +517,6 @@ include ('../app/controllers/compras/cargar_compra.php');
                                                 $('#cantidad_compra').focus();
                                                 alert("Debe ingresar una cantidad válida");
                                             }else{
-                                                
                                                 var url = "../app/controllers/compras/update.php";
                                                 
                                                 $.get(url,{
@@ -518,7 +546,6 @@ include ('../app/controllers/compras/cargar_compra.php');
 
                     </div>
 
-
                 </div>
             </div>
 
@@ -540,7 +567,14 @@ include ('../app/controllers/compras/cargar_compra.php');
         $('#categoria').val($(this).data('categoria'));
         $('#nombre_producto').val($(this).data('nombre'));
         $('#usuario_producto').val($(this).data('email'));
-        $('#descripcio_producto').val($(this).data('descripcion'));
+        
+        // Campos independientes
+        $('#beneficios_producto').val($(this).data('beneficios'));
+        $('#propiedades_producto').val($(this).data('propiedades'));
+        $('#ingredientes_producto').val($(this).data('ingredientes'));
+        $('#cantidad_producto_vista').val($(this).data('cantidad-prod'));
+        $('#unidad_producto').val($(this).data('unidad'));
+
         $('#stock').val($(this).data('stock'));
         $('#stock_actual').val($(this).data('stock'));
         $('#stock_minimo').val($(this).data('stock_min'));
@@ -549,6 +583,11 @@ include ('../app/controllers/compras/cargar_compra.php');
         $('#precio_venta').val($(this).data('precio_venta'));
         $('#fecha_ingreso').val($(this).data('fecha'));
         $('#img_producto').attr('src', $(this).data('imagen'));
+        
+        if (typeof sumacantidades === "function") {
+            sumacantidades();
+        }
+
         $('#modal-buscar_producto').modal('hide');
     });
 

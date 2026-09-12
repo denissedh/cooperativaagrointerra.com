@@ -58,8 +58,37 @@ include('../app/controllers/almacen/cargar_producto.php');
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <label>Descripción del producto:</label>
-                                                    <textarea class="form-control" rows="2" disabled><?php echo $descripcion; ?></textarea>
+                                                    <label>Beneficios:</label>
+                                                    <textarea class="form-control" rows="2" disabled><?php echo $beneficios; ?></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- === NUEVOS CAMPOS AGROINTERRA === -->
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Cantidad:</label>
+                                                    <input type="text" class="form-control" value="<?php echo $cantidad.' '.$unidad; ?>" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Fecha de ingreso:</label>
+                                                    <input type="date" class="form-control" value="<?php echo $fecha_ingreso; ?>" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Ingredientes:</label>
+                                                    <textarea class="form-control" rows="3" disabled><?php echo $ingredientes; ?></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Propiedades:</label>
+                                                    <textarea class="form-control" rows="3" disabled><?php echo $propiedades; ?></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -68,7 +97,7 @@ include('../app/controllers/almacen/cargar_producto.php');
                                         <div class="form-group">
                                             <label>Imagen del producto</label>
                                             <center>
-                                                <img src="<?php echo $URL . "/almacen/img_productos/" . $imagen; ?>" width="50%" alt="Imagen del producto">
+                                                <img src="<?php echo $URL . "/almacen/img_productos/" . $imagen; ?>" width="100%" alt="Imagen del producto" style="border-radius:8px;">
                                             </center>
                                         </div>
                                     </div>
@@ -103,12 +132,6 @@ include('../app/controllers/almacen/cargar_producto.php');
                                         <div class="form-group">
                                             <label>Precio venta:</label>
                                             <input type="number" class="form-control" value="<?php echo $precio_venta; ?>" disabled>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>Fecha de ingreso:</label>
-                                            <input type="date" class="form-control" value="<?php echo $fecha_ingreso; ?>" disabled>
                                         </div>
                                     </div>
                                 </div>

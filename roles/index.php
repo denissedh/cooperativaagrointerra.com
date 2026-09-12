@@ -26,9 +26,7 @@ include('../app/controllers/roles/listado_de_roles.php');
                             <h3 class="card-title">Roles registrados</h3>
 
                             <div class="card-tools">
-                                <button type="button"
-                                        class="btn btn-tool"
-                                        data-card-widget="collapse">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                     <i class="fas fa-minus"></i>
                                 </button>
                             </div>
@@ -46,9 +44,7 @@ include('../app/controllers/roles/listado_de_roles.php');
                                 <?php
                                  $contador = 0;
                                   foreach ($roles_datos as $roles_dato){
-                                    
                                   $id_rol = $roles_dato['id_rol'];
-                                  
                                 ?>
                                 <tr>
                                     <td><center><?php echo $contador + 1; ?></center></td>
