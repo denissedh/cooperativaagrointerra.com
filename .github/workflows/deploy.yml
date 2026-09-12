@@ -1,0 +1,19 @@
+name: Publicar Tienda desde carpeta cliente
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Subir contenido de ./cliente
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./cliente   # 👈 TU CARPETA CORRECTA
+
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
