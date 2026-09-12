@@ -1,4 +1,4 @@
-name: Publicar carpeta CLIENTE
+name: Publicar carpeta cliente
 on:
   push:
     branches: [ main ]
