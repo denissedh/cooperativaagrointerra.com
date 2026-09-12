@@ -1,0 +1,16 @@
+name: Publicar carpeta CLIENTE
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+      - name: Subir contenido de carpeta CLIENTE
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './CLIENTE'
+      - name: Publicar en GitHub Pages
+        uses: actions/deploy-pages@v4
